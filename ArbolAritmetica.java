@@ -5,21 +5,54 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Implementa un Árbol Binario de Expresión Aritmética capaz de leer una
+ * expresión en notación infija (con enteros, decimales, negativos, operadores y
+ * paréntesis/corchetes), construir el árbol respetando la jerarquía de
+ * operaciones, mostrarlo por niveles, generar su recorrido en postorden
+ * (Notación Polaca Inversa) y evaluarlo mediante una pila.
+ *
+ * @author Equipo 5
+ * @version 1.0
+ */
+
 public class ArbolAritmetica {
 
+    /** Nodo raíz del árbol de expresión aritmética. */
     Nodo raiz = null;
+
+    /** Objeto Scanner utilizado para leer la expresión desde consola. */
     Scanner escaner = new Scanner (System.in);
+
+    /** Expresión aritmética ingresada por el usuario. */
     String expresion;
+
+    /** Lista de tokens generados a partir de la expresión ingresada. */
     ArrayList <String> tokens = new ArrayList<>();
+
+    /** Pila auxiliar para almacenar operadores y símbolos de agrupación al construir el árbol. */
     Deque <String> pilaOperadores = new ArrayDeque<>();
+
+    /** Pila auxiliar para almacenar nodos hoja y subárboles durante la construcción del árbol. */
     Deque <Nodo> pilaNodos = new ArrayDeque<>();
+
+    /** Lista que almacena los elementos del recorrido en postorden (Notación Polaca Inversa). */
     ArrayList <String> postordenLista = new ArrayList<>();
+
+    /** Resultado numérico obtenido al evaluar la expresión aritmética. */
     double resultado;
 
+    /**
+     * Constructor por defecto que inicializa un árbol vacío.
+     */
     public ArbolAritmetica (){
         this.raiz = null;
     }
 
+    /**
+     * Solicita al usuario una expresión aritmética por consola, la divide en
+     * tokens y construye el árbol binario de expresión correspondiente.
+     */
     public void ingresaExpresion(){
         System.out.println ("Ingresa tu expresión");
         expresion = escaner.nextLine();
@@ -28,6 +61,10 @@ public class ArbolAritmetica {
         construirArbol();
     }
 
+    /**
+     * Verifica que el árbol no esté vacío, calcula el resultado de la expresión
+     * utilizando el método {@link #calculadora()} y lo imprime en consola.
+     */
     public void resultado(){
 
         if (raiz == null){
@@ -39,6 +76,12 @@ public class ArbolAritmetica {
         }
     }
 
+    /**
+     * Realiza el recorrido recursivo en postorden (izquierdo, derecho, raíz) del árbol
+     * para imprimir y almacenar la expresión en Notación Polaca Inversa.
+     *
+     * @param nodo el nodo actual desde el cual se realiza el recorrido
+     */
     public void postorden(Nodo nodo) {
         if (nodo == null) {
             return;
@@ -49,6 +92,14 @@ public class ArbolAritmetica {
         postordenLista.add(nodo.getCaracter());
     }
     
+    /**
+     * Convierte una expresión aritmética en formato {@code String} en una lista
+     * de tokens individuales (números enteros, decimales, negativos, operadores y
+     * símbolos de agrupación), ignorando espacios en blanco.
+     *
+     * @param expresion la cadena de texto con la expresión aritmética
+     * @return una lista {@code ArrayList<String>} con los tokens separados
+     */
     public ArrayList<String> tokenizar (String expresion){
 
         ArrayList <String> tokensAux = new ArrayList<>();
@@ -102,6 +153,11 @@ public class ArbolAritmetica {
         return tokensAux;
     }
 
+    /**
+     * Imprime en consola todos los tokens contenidos en una lista, uno por línea.
+     *
+     * @param tokens la lista de tokens a imprimir
+     */
     public void imprimirTokens (ArrayList<String> tokens){
 
         for (int i = 0; i<tokens.size(); i++){
@@ -110,6 +166,13 @@ public class ArbolAritmetica {
 
     }
 
+    /**
+     * Devuelve el nivel de prioridad (jerarquía) de un operador o símbolo de agrupación.
+     *
+     * @param caracter el token del operador o símbolo a evaluar
+     * @return {@code 1} para suma y resta; {@code 2} para multiplicación y división;
+     *         {@code 3} para potencia; {@code 0} para paréntesis, corchetes u otros símbolos
+     */
     public int jerarquia (String caracter){
 
         if (caracter.equals("-") || caracter.equals("+")){
@@ -128,6 +191,11 @@ public class ArbolAritmetica {
         return 0;
     }
 
+    /**
+     * Extrae un operador de {@code pilaOperadores} y los dos nodos superiores de
+     * {@code pilaNodos} (primero el hijo derecho y luego el izquierdo) para formar
+     * un subárbol e insertarlo nuevamente en {@code pilaNodos}.
+     */
     public void crearSubarbol (){
         Nodo derecho;
         Nodo izquierdo;
@@ -142,6 +210,10 @@ public class ArbolAritmetica {
         pilaNodos.push(nuevo);
     }
 
+    /**
+     * Construye el árbol binario de expresión a partir de la lista de {@code tokens},
+     * utilizando dos pilas para respetar la jerarquía de operadores y los signos de agrupación.
+     */
     public void construirArbol (){
 
         pilaNodos.clear();
@@ -193,6 +265,10 @@ public class ArbolAritmetica {
         }
     }
 
+    /**
+     * Muestra en consola la estructura del árbol mediante un recorrido por niveles
+     * usando una cola, indicando la raíz, cada nodo padre y sus hijos izquierdo y derecho.
+     */
     public void mostrarArbol(){
 
         if(raiz==null){
@@ -236,6 +312,13 @@ public class ArbolAritmetica {
         System.out.println("\n");
     }
 
+    /**
+     * Genera la Notación Polaca Inversa mediante el recorrido en postorden del árbol
+     * y evalúa la expresión utilizando una pila de resultados.
+     *
+     * @return el resultado numérico de la expresión, o {@code 0} si el árbol está vacío
+     *         o se intenta realizar una división entre cero
+     */
     public double calculadora() {
 
         if (raiz == null){
